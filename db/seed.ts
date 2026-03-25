@@ -1,6 +1,8 @@
-import { db } from 'astro:db';
+import { db } from "astro:db";
+import { TripActivities, TripDays, Trips } from "./tables";
 
-// https://astro.build/db/seed
 export default async function seed() {
-	// TODO
+  await db.delete(TripActivities);
+  await db.delete(TripDays);
+  await db.delete(Trips);
 }

@@ -1,0 +1,21 @@
+---
+import "@ansiversa/components/styles/global.css";
+import { WebLayout, AvContainer } from "@ansiversa/components";
+import AvMiniAppBar from "../components/AvMiniAppBar.astro";
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+---
+
+<WebLayout title={Astro.props.title} description={Astro.props.description}>
+  <div class="min-h-screen bg-slate-950 text-slate-100">
+    <AvMiniAppBar />
+    <main class="py-8">
+      <AvContainer>
+        <slot />
+      </AvContainer>
+    </main>
+  </div>
+</WebLayout>
