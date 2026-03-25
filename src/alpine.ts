@@ -1,6 +1,6 @@
 import type { Alpine } from "alpinejs";
+import { registerTravelStore } from "./stores/travelStore";
 
 export default function initAlpine(Alpine: Alpine) {
-  // Intentionally minimal.
-  // Each app will register its own stores here later.
+  registerTravelStore(Alpine);
 }

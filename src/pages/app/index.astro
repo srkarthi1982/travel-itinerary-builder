@@ -1,0 +1,107 @@
+---
+import { actions } from "astro:actions";
+import { AvButton } from "@ansiversa/components";
+import AppWorkspace from "../../layouts/AppWorkspace.astro";
+
+const listResponse = await Astro.callAction(actions.listTrips, { includeArchived: true });
+const trips = listResponse.data?.trips ?? [];
+
+const summary = {
+  total: trips.length,
+  active: trips.filter((trip) => trip.status === "planned" || trip.status === "draft").length,
+  completed: trips.filter((trip) => trip.status === "completed").length,
+  archived: trips.filter((trip) => trip.status === "archived").length,
+};
+
+const activeTrips = trips.filter((trip) => trip.status !== "archived");
+const archivedTrips = trips.filter((trip) => trip.status === "archived");
+---
+
+<AppWorkspace title="Travel workspace · Ansiversa" description="Manage your travel plans.">
+  <section x-data="{ openCreate:false, tab:'overview' }" class="space-y-8">
+    <div class="flex flex-wrap items-center justify-between gap-3">
+      <div>
+        <h1 class="text-3xl font-semibold">Travel Workspace</h1>
+        <p class="text-slate-400">Organize upcoming plans and keep past trips archived.</p>
+      </div>
+      <AvButton type="button" @click="openCreate=true">Create trip</AvButton>
+    </div>
+
+    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <article class="rounded-2xl border border-slate-800 bg-slate-900/70 p-4"><p class="text-slate-400 text-sm">Total trips</p><p class="text-2xl font-semibold">{summary.total}</p></article>
+      <article class="rounded-2xl border border-slate-800 bg-slate-900/70 p-4"><p class="text-slate-400 text-sm">Active</p><p class="text-2xl font-semibold">{summary.active}</p></article>
+      <article class="rounded-2xl border border-slate-800 bg-slate-900/70 p-4"><p class="text-slate-400 text-sm">Completed</p><p class="text-2xl font-semibold">{summary.completed}</p></article>
+      <article class="rounded-2xl border border-slate-800 bg-slate-900/70 p-4"><p class="text-slate-400 text-sm">Archived</p><p class="text-2xl font-semibold">{summary.archived}</p></article>
+    </div>
+
+    <div class="flex gap-2 border-b border-slate-800 pb-2">
+      <button class="px-3 py-2 text-sm rounded-lg" :class="tab==='overview' ? 'bg-slate-800' : 'text-slate-400'" @click="tab='overview'">Overview</button>
+      <button class="px-3 py-2 text-sm rounded-lg" :class="tab==='trips' ? 'bg-slate-800' : 'text-slate-400'" @click="tab='trips'">Trips</button>
+      <button class="px-3 py-2 text-sm rounded-lg" :class="tab==='archived' ? 'bg-slate-800' : 'text-slate-400'" @click="tab='archived'">Archived</button>
+    </div>
+
+    <div x-show="tab==='overview'" class="rounded-2xl border border-slate-800 bg-slate-900/60 p-6 text-slate-300">
+      {summary.total === 0 ? "No trips yet. Start with your first itinerary." : `You have ${summary.active} active trip(s) and ${summary.completed} completed trip(s).`}
+    </div>
+
+    <div x-show="tab==='trips'" class="space-y-3">
+      {activeTrips.length === 0 ? (
+        <p class="rounded-2xl border border-dashed border-slate-700 p-8 text-center text-slate-400">No active trips yet.</p>
+      ) : (
+        activeTrips.map((trip) => (
+          <article class="rounded-2xl border border-slate-800 bg-slate-900/60 p-5 flex flex-wrap justify-between gap-3">
+            <div>
+              <a class="text-lg font-semibold hover:text-cyan-300" href={`/app/trips/${trip.id}`}>{trip.title}</a>
+              <p class="text-slate-400">{trip.destination} · {trip.startDate.toLocaleDateString()} – {trip.endDate.toLocaleDateString()}</p>
+            </div>
+            <div class="flex gap-2 items-start">
+              <form method="POST" action={actions.archiveTrip}>
+                <input type="hidden" name="id" value={trip.id} />
+                <button class="px-3 py-2 rounded-lg border border-slate-700 text-sm">Archive</button>
+              </form>
+            </div>
+          </article>
+        ))
+      )}
+    </div>
+
+    <div x-show="tab==='archived'" class="space-y-3">
+      {archivedTrips.length === 0 ? (
+        <p class="rounded-2xl border border-dashed border-slate-700 p-8 text-center text-slate-400">No archived trips.</p>
+      ) : (
+        archivedTrips.map((trip) => (
+          <article class="rounded-2xl border border-slate-800 bg-slate-900/60 p-5 flex flex-wrap justify-between gap-3">
+            <div>
+              <a class="text-lg font-semibold hover:text-cyan-300" href={`/app/trips/${trip.id}`}>{trip.title}</a>
+              <p class="text-slate-400">{trip.destination}</p>
+            </div>
+            <form method="POST" action={actions.restoreTrip}>
+              <input type="hidden" name="id" value={trip.id} />
+              <button class="px-3 py-2 rounded-lg border border-slate-700 text-sm">Restore</button>
+            </form>
+          </article>
+        ))
+      )}
+    </div>
+
+    <div x-show="openCreate" x-cloak class="fixed inset-0 bg-slate-950/80 p-4 md:p-12 z-30 overflow-auto">
+      <div class="max-w-xl mx-auto rounded-2xl border border-slate-800 bg-slate-900 p-6">
+        <div class="flex items-center justify-between mb-4"><h2 class="text-xl font-semibold">Create new trip</h2><button @click="openCreate=false">✕</button></div>
+        <form method="POST" action={actions.createTrip} class="space-y-3">
+          <input name="title" required placeholder="Trip title" class="w-full rounded-lg bg-slate-800 border border-slate-700 p-3" />
+          <input name="destination" required placeholder="Destination" class="w-full rounded-lg bg-slate-800 border border-slate-700 p-3" />
+          <div class="grid grid-cols-2 gap-3">
+            <input name="startDate" type="date" required class="rounded-lg bg-slate-800 border border-slate-700 p-3" />
+            <input name="endDate" type="date" required class="rounded-lg bg-slate-800 border border-slate-700 p-3" />
+          </div>
+          <textarea name="notes" placeholder="Notes (optional)" class="w-full rounded-lg bg-slate-800 border border-slate-700 p-3"></textarea>
+          <input type="hidden" name="status" value="planned" />
+          <div class="flex justify-end gap-2">
+            <button type="button" @click="openCreate=false" class="px-3 py-2 rounded-lg border border-slate-700">Cancel</button>
+            <button class="px-4 py-2 rounded-lg bg-cyan-500 text-slate-950 font-medium">Save trip</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+</AppWorkspace>

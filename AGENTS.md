@@ -26,5 +26,6 @@ MANDATORY: After completing each task, update this repo’s AGENTS.md Task Log (
 
 ## Task Log (Recent)
 - Keep newest first; include date and short summary.
+- 2026-03-25 Implemented V1 travel-itinerary-builder: Astro DB schema finalized (Trips/TripDays/TripActivities), ownership-guarded server actions, /app + /app/trips/[id] UX, Alpine global store, middleware auth split (public /, protected /app), dashboard summary webhook + high-signal notifications; verified build succeeds and documented typecheck dependency/network limitation.
 - 2026-02-09 Added repo-level AGENTS.md enforcement contract (workspace reference + mandatory task-log update rule).
 - 2026-02-09 Initialized repo AGENTS baseline for single-repo Codex/AI safety.
