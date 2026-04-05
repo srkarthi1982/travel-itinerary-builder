@@ -1,5 +1,4 @@
-import { db } from "astro:db";
-import { TripActivities, TripDays, Trips } from "./tables";
+import { db, TripActivities, TripDays, Trips } from "astro:db";
 
 export default async function seed() {
   await db.delete(TripActivities);

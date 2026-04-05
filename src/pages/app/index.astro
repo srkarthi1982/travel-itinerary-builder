@@ -4,17 +4,17 @@ import { AvButton } from "@ansiversa/components";
 import AppWorkspace from "../../layouts/AppWorkspace.astro";
 
 const listResponse = await Astro.callAction(actions.listTrips, { includeArchived: true });
-const trips = listResponse.data?.trips ?? [];
+const trips = listResponse.data?.data?.trips ?? [];
 
 const summary = {
   total: trips.length,
-  active: trips.filter((trip) => trip.status === "planned" || trip.status === "draft").length,
-  completed: trips.filter((trip) => trip.status === "completed").length,
-  archived: trips.filter((trip) => trip.status === "archived").length,
+  active: trips.filter((trip: (typeof trips)[number]) => trip.status === "planned" || trip.status === "draft").length,
+  completed: trips.filter((trip: (typeof trips)[number]) => trip.status === "completed").length,
+  archived: trips.filter((trip: (typeof trips)[number]) => trip.status === "archived").length,
 };
 
-const activeTrips = trips.filter((trip) => trip.status !== "archived");
-const archivedTrips = trips.filter((trip) => trip.status === "archived");
+const activeTrips = trips.filter((trip: (typeof trips)[number]) => trip.status !== "archived");
+const archivedTrips = trips.filter((trip: (typeof trips)[number]) => trip.status === "archived");
 ---
 
 <AppWorkspace title="Travel workspace · Ansiversa" description="Manage your travel plans.">
@@ -48,7 +48,7 @@ const archivedTrips = trips.filter((trip) => trip.status === "archived");
       {activeTrips.length === 0 ? (
         <p class="rounded-2xl border border-dashed border-slate-700 p-8 text-center text-slate-400">No active trips yet.</p>
       ) : (
-        activeTrips.map((trip) => (
+        activeTrips.map((trip: (typeof activeTrips)[number]) => (
           <article class="rounded-2xl border border-slate-800 bg-slate-900/60 p-5 flex flex-wrap justify-between gap-3">
             <div>
               <a class="text-lg font-semibold hover:text-cyan-300" href={`/app/trips/${trip.id}`}>{trip.title}</a>
@@ -69,7 +69,7 @@ const archivedTrips = trips.filter((trip) => trip.status === "archived");
       {archivedTrips.length === 0 ? (
         <p class="rounded-2xl border border-dashed border-slate-700 p-8 text-center text-slate-400">No archived trips.</p>
       ) : (
-        archivedTrips.map((trip) => (
+        archivedTrips.map((trip: (typeof archivedTrips)[number]) => (
           <article class="rounded-2xl border border-slate-800 bg-slate-900/60 p-5 flex flex-wrap justify-between gap-3">
             <div>
               <a class="text-lg font-semibold hover:text-cyan-300" href={`/app/trips/${trip.id}`}>{trip.title}</a>

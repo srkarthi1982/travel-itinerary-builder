@@ -7,8 +7,33 @@ export type TripSummary = {
   status: string;
 };
 
+type TravelStore = {
+  trips: TripSummary[];
+  selectedTab: string;
+  activeTripId: string | null;
+  drawers: {
+    trip: boolean;
+    day: boolean;
+    activity: boolean;
+  };
+  loading: {
+    createTrip: boolean;
+    createDay: boolean;
+    createActivity: boolean;
+  };
+  flash: {
+    type: "success" | "error";
+    message: string;
+  };
+  setTrips(trips: TripSummary[]): void;
+  setTab(tab: string): void;
+  openDrawer(name: "trip" | "day" | "activity"): void;
+  closeDrawer(name: "trip" | "day" | "activity"): void;
+  notify(type: "success" | "error", message: string): void;
+};
+
 export function registerTravelStore(Alpine: Alpine) {
-  Alpine.store("travel", {
+  const store: TravelStore = {
     trips: [] as TripSummary[],
     selectedTab: "overview",
     activeTripId: null as string | null,
@@ -44,5 +69,7 @@ export function registerTravelStore(Alpine: Alpine) {
         this.flash.message = "";
       }, 2500);
     },
-  });
+  };
+
+  Alpine.store("travel", store);
 }

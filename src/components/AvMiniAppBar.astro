@@ -17,9 +17,9 @@ const currentPath = Astro.url.pathname;
       <div class="flex items-center gap-2 text-sm">
         <span class="hidden sm:inline text-slate-400">{APP_ID}:{APP_LOGO_KEY}</span>
         {currentPath === "/app" ? (
-          <AvButton href="/" variant="secondary">Public Page</AvButton>
+          <AvButton href="/" variant="outline">Public Page</AvButton>
         ) : (
-          <AvButton href="/app" variant="secondary">Workspace</AvButton>
+          <AvButton href="/app" variant="outline">Workspace</AvButton>
         )}
       </div>
     </div>
